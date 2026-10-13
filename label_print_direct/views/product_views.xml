@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Odoo-nun standart «Print Labels» düyməsi gizlədilir: formatın adı ilə düymələr
+         eyni pəncərəni açır, orada «A4 vərəq (PDF)» seçimi də var. -->
+    <record id="product_template_form_hide_print_labels" model="ir.ui.view">
+        <field name="name">product.template.form.hide.print.labels</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_form_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//header/button[@name='action_open_label_layout']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="product_variant_easy_edit_hide_print_labels" model="ir.ui.view">
+        <field name="name">product.product.easy.edit.hide.print.labels</field>
+        <field name="model">product.product</field>
+        <field name="inherit_id" ref="product.product_variant_easy_edit_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//header/button[@name='action_open_label_layout']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+        </field>
+    </record>
+</odoo>

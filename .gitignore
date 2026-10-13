@@ -1,0 +1,8 @@
+__pycache__/
+*.pyc
+config.ini
+*.log
+dist/
+build/
+*.spec
+*.zip

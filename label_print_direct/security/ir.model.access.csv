@@ -1,0 +1,21 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_label_format_user,label.format user,model_label_format,base.group_user,1,0,0,0
+access_label_format_manager,label.format manager,model_label_format,stock.group_stock_manager,1,1,1,1
+access_label_format_system,label.format system,model_label_format,base.group_system,1,1,1,1
+access_label_element_user,label.element user,model_label_element,base.group_user,1,0,0,0
+access_label_element_manager,label.element manager,model_label_element,stock.group_stock_manager,1,1,1,1
+access_label_element_system,label.element system,model_label_element,base.group_system,1,1,1,1
+access_label_print_job_user,label.print.job user,model_label_print_job,base.group_user,1,1,1,0
+access_label_print_job_manager,label.print.job manager,model_label_print_job,stock.group_stock_manager,1,1,1,1
+access_label_print_job_system,label.print.job system,model_label_print_job,base.group_system,1,1,1,1
+access_label_usage_user,label.usage user,model_label_usage,base.group_user,1,0,0,0
+access_label_usage_system,label.usage system,model_label_usage,base.group_system,1,1,1,1
+access_label_printer_user,label.printer user,model_label_printer,base.group_user,1,0,0,0
+access_label_printer_manager,label.printer manager,model_label_printer,stock.group_stock_manager,1,1,1,1
+access_label_printer_system,label.printer system,model_label_printer,base.group_system,1,1,1,1
+access_label_printer_model_user,label.printer.model user,model_label_printer_model,base.group_user,1,0,0,0
+access_label_printer_model_manager,label.printer.model manager,model_label_printer_model,stock.group_stock_manager,1,1,1,1
+access_label_printer_model_system,label.printer.model system,model_label_printer_model,base.group_system,1,1,1,1
+access_label_size_user,label.size user,model_label_size,base.group_user,1,0,0,0
+access_label_size_manager,label.size manager,model_label_size,stock.group_stock_manager,1,1,1,1
+access_label_size_system,label.size system,model_label_size,base.group_system,1,1,1,1

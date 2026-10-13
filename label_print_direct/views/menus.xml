@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <menuitem id="menu_label_root" name="Etiket çapı"
+              web_icon="label_print_direct,static/description/icon.png" sequence="96"/>
+
+    <menuitem id="menu_label_print_job" name="Çap növbəsi" parent="menu_label_root"
+              action="action_label_print_job" sequence="10"/>
+
+    <menuitem id="menu_label_format" name="Formatlar" parent="menu_label_root"
+              action="action_label_format" sequence="20"
+              groups="stock.group_stock_manager,base.group_system"/>
+
+    <menuitem id="menu_label_config" name="Konfiqurator" parent="menu_label_root"
+              sequence="30" groups="stock.group_stock_manager,base.group_system"/>
+
+    <menuitem id="menu_label_printer" name="Printerlər" parent="menu_label_config"
+              action="action_label_printer" sequence="10"/>
+
+    <menuitem id="menu_label_printer_model" name="Printer modelləri" parent="menu_label_config"
+              action="action_label_printer_model" sequence="20"/>
+
+    <menuitem id="menu_label_size" name="Etiket ölçüləri" parent="menu_label_config"
+              action="action_label_size" sequence="30"/>
+
+    <menuitem id="menu_label_settings" name="Ayarlar" parent="menu_label_config"
+              action="action_alp_settings" sequence="40" groups="base.group_system"/>
+
+</odoo>

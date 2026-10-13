@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_label_print_job_list" model="ir.ui.view">
+        <field name="name">label.print.job.list</field>
+        <field name="model">label.print.job</field>
+        <field name="arch" type="xml">
+            <list create="false" import="false"
+                  decoration-success="state == 'done'"
+                  decoration-danger="state == 'error'"
+                  decoration-info="state == 'sent'">
+                <field name="name"/>
+                <field name="create_date" string="Tarix"/>
+                <field name="source_label"/>
+                <field name="doc_ref"/>
+                <field name="product_name"/>
+                <field name="copies"/>
+                <field name="format_id"/>
+                <field name="printer_key" optional="hide"/>
+                <field name="user_id" string="Göndərən"/>
+                <field name="state" widget="badge"
+                       decoration-success="state == 'done'"
+                       decoration-danger="state == 'error'"
+                       decoration-info="state == 'sent'"
+                       decoration-warning="state == 'pending'"/>
+                <field name="company_id" groups="base.group_multi_company"/>
+                <button name="action_requeue" type="object" string="Yenidən növbəyə"
+                        icon="fa-refresh" invisible="state == 'pending'"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_label_print_job_form" model="ir.ui.view">
+        <field name="name">label.print.job.form</field>
+        <field name="model">label.print.job</field>
+        <field name="arch" type="xml">
+            <form create="false">
+                <header>
+                    <button name="action_requeue" type="object" string="Yenidən növbəyə"
+                            class="btn-primary" icon="fa-refresh" invisible="state == 'pending'"/>
+                    <button name="action_mark_done" type="object" string="Çap olundu kimi işarələ"
+                            invisible="state == 'done'"/>
+                    <field name="state" widget="statusbar" statusbar_visible="pending,sent,done"/>
+                </header>
+                <sheet>
+                    <div class="oe_title"><h1><field name="name"/></h1></div>
+                    <group>
+                        <group string="Nə çap olunur">
+                            <field name="product_name"/>
+                            <field name="copies"/>
+                            <field name="format_id"/>
+                            <field name="printer_key"/>
+                        </group>
+                        <group string="Haradan, kim">
+                            <field name="source_label"/>
+                            <field name="doc_ref" invisible="not doc_ref"/>
+                            <field name="doc_model" invisible="1"/>
+                            <field name="doc_id" invisible="1"/>
+                            <button name="action_open_doc" type="object" string="Sənədi aç"
+                                    class="btn-link p-0" icon="fa-external-link" invisible="not doc_id"/>
+                            <field name="user_id" string="Göndərən"/>
+                            <field name="create_date" string="Yaradıldı"/>
+                            <field name="sent_date"/>
+                            <field name="done_date"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                        </group>
+                    </group>
+                    <group string="Xəta" invisible="not error_message">
+                        <field name="error_message" nolabel="1"/>
+                    </group>
+                    <notebook>
+                        <page string="Printer əmrləri" name="payload">
+                            <field name="payload" widget="text" readonly="1"/>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_label_print_job_search" model="ir.ui.view">
+        <field name="name">label.print.job.search</field>
+        <field name="model">label.print.job</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="product_name"/>
+                <field name="doc_ref"/>
+                <field name="source_label"/>
+                <field name="printer_key"/>
+                <filter string="Gözləyir" name="pending" domain="[('state', '=', 'pending')]"/>
+                <filter string="Göndərildi" name="sent" domain="[('state', '=', 'sent')]"/>
+                <filter string="Çap olundu" name="done" domain="[('state', '=', 'done')]"/>
+                <filter string="Xəta" name="error" domain="[('state', '=', 'error')]"/>
+                <group expand="0" string="Qruplaşdır">
+                    <filter string="Status" name="group_state" context="{'group_by': 'state'}"/>
+                    <filter string="Format" name="group_format" context="{'group_by': 'format_id'}"/>
+                    <filter string="Mənbə" name="group_source" context="{'group_by': 'source_label'}"/>
+                    <filter string="Göndərən" name="group_user" context="{'group_by': 'user_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_label_print_job" model="ir.actions.act_window">
+        <field name="name">Çap növbəsi</field>
+        <field name="res_model">label.print.job</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Hələ çap işi yoxdur</p>
+            <p>Məhsul siyahısından «Print Labels» seçəndə hər etiket burada bir iş kimi görünür.
+               Agent «Gözləyir» işləri götürüb printerə göndərir.</p>
+        </field>
+    </record>
+
+</odoo>

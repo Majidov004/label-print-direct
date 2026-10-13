@@ -1,0 +1,298 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+<t t-name="label_print_direct.LabelCanvas">
+    <div class="alp-designer" t-ref="root" tabindex="0" t-on-keydown="onKeyDown">
+
+        <!-- Sol: alət paneli -->
+        <div class="alp-toolbar">
+            <div class="alp-title">Əlavə et</div>
+            <t t-foreach="TYPES" t-as="tp" t-key="tp.type">
+                <button type="button" class="btn btn-sm btn-light alp-add"
+                        t-att-disabled="props.readonly" t-on-click="() => this.addElement(tp.type)">
+                    <i t-attf-class="fa fa-fw {{tp.icon}} me-1"/><t t-esc="tp.label"/>
+                </button>
+            </t>
+            <div class="alp-title mt-3">Böyütmə</div>
+            <div class="btn-group btn-group-sm w-100">
+                <button type="button" class="btn btn-light" t-on-click="() => this.setZoom(-1)"><i class="fa fa-search-minus"/></button>
+                <button type="button" class="btn btn-light" disabled="disabled"><t t-esc="state.zoom"/> px/mm</button>
+                <button type="button" class="btn btn-light" t-on-click="() => this.setZoom(1)"><i class="fa fa-search-plus"/></button>
+            </div>
+            <div class="form-check mt-3">
+                <input type="checkbox" class="form-check-input" id="alp_show_preview"
+                       t-att-checked="state.showPreview" t-on-change="togglePreview"/>
+                <label class="form-check-label small" for="alp_show_preview">Çap önizləməsi</label>
+            </div>
+            <div class="form-check">
+                <input type="checkbox" class="form-check-input" id="alp_snap"
+                       t-att-checked="state.snapEnabled" t-on-change="toggleSnap"/>
+                <label class="form-check-label small" for="alp_snap" title="Alt basılı saxlayanda müvəqqəti söndürülür">Yapışdırma</label>
+            </div>
+        </div>
+
+        <!-- Orta: kanvas + önizləmə -->
+        <div class="alp-stage">
+            <div class="alp-stage-row">
+                <div class="alp-canvas-wrap">
+                    <div class="alp-caption">Dizayn — <t t-esc="widthMm"/> × <t t-esc="heightMm"/> mm</div>
+                    <svg class="alp-canvas" t-att-width="svgW" t-att-height="svgH"
+                         t-att-viewBox="'0 0 ' + svgW + ' ' + svgH"
+                         t-on-pointerdown="onCanvasPointerDown">
+                        <rect x="0.5" y="0.5" t-att-width="svgW - 1" t-att-height="svgH - 1" fill="#fff" stroke="#888"/>
+                        <t t-foreach="gridLines" t-as="g" t-key="g.key">
+                            <line t-att-x1="g.x1" t-att-y1="g.y1" t-att-x2="g.x2" t-att-y2="g.y2" stroke="#e5e7eb" stroke-width="1"/>
+                        </t>
+                        <t t-foreach="state.elements" t-as="el" t-key="el.uid">
+                            <t t-set="b" t-value="elBox(el)"/>
+                            <g t-att-transform="elTransform(el)"
+                               t-attf-class="alp-el {{ state.selected === el.uid ? 'alp-selected' : '' }}"
+                               t-on-pointerdown.stop="(ev) => this.onElementPointerDown(ev, el)">
+                                <rect x="0" y="0" t-att-width="b.w" t-att-height="b.h" fill="transparent"/>
+                                <t t-if="isTextType(el)">
+                                    <t t-foreach="textLines(el, b)" t-as="ln" t-key="ln_index">
+                                        <text t-att-x="ln.x" t-att-y="ln.y" t-att-font-size="fontPx(el)"
+                                              t-att-text-anchor="ln.anchor"
+                                              t-att-font-weight="el.bold ? 'bold' : 'normal'"
+                                              font-family="'Noto Sans', Arial, sans-serif" fill="#111"
+                                              t-esc="ln.text"/>
+                                    </t>
+                                </t>
+                                <t t-elif="el.type === 'barcode'">
+                                    <t t-foreach="barStripes(el, b)" t-as="s" t-key="s_index">
+                                        <rect t-att-x="s.x" y="0" t-att-width="s.w" t-att-height="s.h" fill="#111"/>
+                                    </t>
+                                    <text t-if="el.show_barcode_text" t-att-x="b.w / 2" t-att-y="barTextY(el, b)"
+                                          text-anchor="middle" t-att-font-size="fontPx(el)"
+                                          font-family="'Noto Sans', Arial, sans-serif" fill="#111">2000000000002</text>
+                                </t>
+                                <t t-elif="el.type === 'line'">
+                                    <rect x="0" y="0" t-att-width="b.w" t-att-height="b.h" fill="#111"/>
+                                </t>
+                                <t t-elif="el.type === 'rect'">
+                                    <rect x="0" y="0" t-att-width="b.w" t-att-height="b.h" fill="none" stroke="#111"
+                                          t-att-stroke-width="rectStrokePx(el)"/>
+                                </t>
+                                <t t-if="state.selected === el.uid">
+                                    <rect x="0" y="0" t-att-width="b.w" t-att-height="b.h" fill="none"
+                                          stroke="#2563eb" stroke-width="1.5" stroke-dasharray="4 2"/>
+                                    <rect t-if="!props.readonly" class="alp-handle"
+                                          t-att-x="b.w - 5" t-att-y="b.h - 5" width="10" height="10" fill="#2563eb"
+                                          t-on-pointerdown.stop="(ev) => this.onHandlePointerDown(ev, el)"/>
+                                </t>
+                            </g>
+                        </t>
+                        <t t-foreach="state.guides" t-as="g" t-key="g_index">
+                            <line t-att-x1="g.x1" t-att-y1="g.y1" t-att-x2="g.x2" t-att-y2="g.y2"
+                                  t-att-stroke="g.color" stroke-width="1" stroke-dasharray="4 3"
+                                  pointer-events="none"/>
+                        </t>
+                    </svg>
+                </div>
+                <div class="alp-preview" t-if="state.showPreview">
+                    <div class="alp-caption">Çap önizləməsi (printerdə çıxan kimi)</div>
+                    <img t-if="state.preview" t-att-src="state.preview" t-attf-style="width: {{svgW}}px"/>
+                    <div t-if="!state.preview and !state.previewError" class="text-muted small">Hazırlanır…</div>
+                    <div t-if="state.previewError" class="text-danger small" t-esc="state.previewError"/>
+                </div>
+            </div>
+            <div class="alp-hint text-muted small mt-2">
+                Elementi tutub sürüşdürün, künc düyməsi ilə ölçüsünü dəyişin. Alt basılı = sərbəst hərəkət (yapışdırmasız).
+                Ox düymələri 0,5 mm (Shift ilə 2 mm), Delete silir, Ctrl+D kopyalayır. Dəqiq iş üçün böyüdün.
+            </div>
+        </div>
+
+        <!-- Sağ: xassələr + siyahı -->
+        <div class="alp-props">
+            <t t-if="selectedEl">
+                <t t-set="el" t-value="selectedEl"/>
+                <div t-key="el.uid">
+                    <div class="alp-title"><t t-esc="typeLabel(el.type)"/></div>
+                    <div class="row g-1">
+                        <div class="col-6">
+                            <label class="alp-lbl">X (mm)</label>
+                            <input type="number" step="0.5" class="form-control form-control-sm"
+                                   t-att-value="el.x_mm" t-att-disabled="props.readonly"
+                                   t-on-change="(ev) => this.onNum('x_mm', ev, 0)"/>
+                        </div>
+                        <div class="col-6">
+                            <label class="alp-lbl">Y (mm)</label>
+                            <input type="number" step="0.5" class="form-control form-control-sm"
+                                   t-att-value="el.y_mm" t-att-disabled="props.readonly"
+                                   t-on-change="(ev) => this.onNum('y_mm', ev, 0)"/>
+                        </div>
+                        <div class="col-6">
+                            <label class="alp-lbl"><t t-if="isTextType(el)">En (mm, 0 = kənara)</t><t t-else="">En (mm)</t></label>
+                            <input type="number" step="0.5" class="form-control form-control-sm"
+                                   t-att-value="el.width_mm" t-att-disabled="props.readonly"
+                                   t-on-change="(ev) => this.onNum('width_mm', ev, 0)"/>
+                        </div>
+                        <div class="col-6" t-if="el.type === 'barcode' or el.type === 'line' or el.type === 'rect'">
+                            <label class="alp-lbl">Hündürlük (mm)</label>
+                            <input type="number" step="0.5" class="form-control form-control-sm"
+                                   t-att-value="el.height_mm" t-att-disabled="props.readonly"
+                                   t-on-change="(ev) => this.onNum('height_mm', ev, 0.1)"/>
+                        </div>
+                        <div class="col-6" t-if="isTextType(el) or (el.type === 'barcode' and el.show_barcode_text)">
+                            <label class="alp-lbl">Şrift (pt)</label>
+                            <input type="number" step="1" class="form-control form-control-sm"
+                                   t-att-value="el.font_pt" t-att-disabled="props.readonly"
+                                   t-on-change="(ev) => this.onInt('font_pt', ev, 3)"/>
+                        </div>
+                        <div class="col-6" t-if="isTextType(el)">
+                            <label class="alp-lbl">Düzülüş</label>
+                            <select class="form-select form-select-sm" t-att-disabled="props.readonly"
+                                    t-on-change="(ev) => this.onSelect('align', ev)">
+                                <option value="left" t-att-selected="el.align === 'left'">Sol</option>
+                                <option value="center" t-att-selected="el.align === 'center'">Orta</option>
+                                <option value="right" t-att-selected="el.align === 'right'">Sağ</option>
+                            </select>
+                        </div>
+                        <div class="col-6">
+                            <label class="alp-lbl">Fırlanma</label>
+                            <select class="form-select form-select-sm" t-att-disabled="props.readonly"
+                                    t-on-change="(ev) => this.onSelect('rotation', ev)">
+                                <option value="0" t-att-selected="el.rotation === 0">0°</option>
+                                <option value="90" t-att-selected="el.rotation === 90">90°</option>
+                                <option value="180" t-att-selected="el.rotation === 180">180°</option>
+                                <option value="270" t-att-selected="el.rotation === 270">270°</option>
+                            </select>
+                        </div>
+                        <div class="col-6" t-if="isTextType(el)">
+                            <div class="form-check mt-3">
+                                <input type="checkbox" class="form-check-input" id="alp_bold"
+                                       t-att-checked="el.bold" t-att-disabled="props.readonly"
+                                       t-on-change="(ev) => this.onCheck('bold', ev)"/>
+                                <label class="form-check-label small" for="alp_bold">Qalın</label>
+                            </div>
+                        </div>
+                        <div class="col-6" t-if="isTextType(el)">
+                            <div class="form-check mt-3">
+                                <input type="checkbox" class="form-check-input" id="alp_wrap"
+                                       t-att-checked="el.wrap" t-att-disabled="props.readonly"
+                                       t-on-change="(ev) => this.onCheck('wrap', ev)"/>
+                                <label class="form-check-label small" for="alp_wrap">Sətrə keçir</label>
+                            </div>
+                        </div>
+                        <div class="col-6" t-if="isTextType(el) and el.wrap">
+                            <label class="alp-lbl">Maks. sətir</label>
+                            <input type="number" step="1" class="form-control form-control-sm"
+                                   t-att-value="el.wrap_lines" t-att-disabled="props.readonly"
+                                   t-on-change="(ev) => this.onInt('wrap_lines', ev, 1)"/>
+                        </div>
+                        <div class="col-12" t-if="el.type === 'text'">
+                            <label class="alp-lbl">Mətn</label>
+                            <input type="text" class="form-control form-control-sm"
+                                   t-att-value="el.text" t-att-disabled="props.readonly"
+                                   t-on-change="(ev) => this.onText('text', ev)"/>
+                            <label class="alp-lbl mt-1">Sahə daxil et (mətnin sonuna)</label>
+                            <select class="form-select form-select-sm" t-att-disabled="props.readonly"
+                                    t-on-change="onInsertPlaceholder">
+                                <option value="">— seçin —</option>
+                                <optgroup label="Əsas">
+                                    <t t-foreach="basePlaceholders" t-as="p" t-key="p.token">
+                                        <option t-att-value="p.token"><t t-esc="p.label"/> <t t-esc="p.token"/></option>
+                                    </t>
+                                </optgroup>
+                                <t t-foreach="fieldGroups" t-as="g" t-key="g.source + '|' + g.group">
+                                    <optgroup t-att-label="g.group">
+                                        <t t-foreach="g.items" t-as="f" t-key="f.name">
+                                            <option t-att-value="'{' + g.source + '.' + f.name + '}'"><t t-esc="f.label"/> {<t t-esc="g.source"/>.<t t-esc="f.name"/>}</option>
+                                        </t>
+                                    </optgroup>
+                                </t>
+                            </select>
+                            <div class="text-muted small mt-1">Mətn və sahələr qarışıq yazıla bilər: «Kateqoriya: {product.categ_id}».</div>
+                        </div>
+                        <div class="col-12" t-if="el.type === 'field'">
+                            <label class="alp-lbl">Sahə (mənbə › sahə)</label>
+                            <select class="form-select form-select-sm" t-att-disabled="props.readonly"
+                                    t-on-change="onFieldPick">
+                                <option value="" t-att-selected="!el.field_name">— seçin —</option>
+                                <t t-foreach="fieldGroups" t-as="g" t-key="g.source + '|' + g.group">
+                                    <optgroup t-att-label="g.group">
+                                        <t t-foreach="g.items" t-as="f" t-key="f.name">
+                                            <option t-att-value="g.source + '|' + f.name"
+                                                    t-att-selected="f.name === el.field_name and g.source === (el.field_source || 'product')">
+                                                <t t-esc="f.label"/> (<t t-esc="f.name"/>)
+                                            </option>
+                                        </t>
+                                    </optgroup>
+                                </t>
+                            </select>
+                            <div class="text-muted small mt-1">Sənəd və sətir sahələri formatın «Harada istifadə olunur» seçiminə görə gəlir. Çapda sahənin adı çıxır (ID yox).</div>
+                            <div class="form-check mt-1">
+                                <input type="checkbox" class="form-check-input" id="alp_short_name"
+                                       t-att-checked="el.short_name" t-att-disabled="props.readonly"
+                                       t-on-change="(ev) => this.onCheck('short_name', ev)"/>
+                                <label class="form-check-label small" for="alp_short_name">Yalnız son hissə («All / İçki / Su» → «Su»)</label>
+                            </div>
+                        </div>
+                        <div class="col-12" t-if="el.type === 'price'">
+                            <div class="form-check">
+                                <input type="checkbox" class="form-check-input" id="alp_amount_only"
+                                       t-att-checked="el.price_amount_only" t-att-disabled="props.readonly"
+                                       t-on-change="(ev) => this.onCheck('price_amount_only', ev)"/>
+                                <label class="form-check-label small" for="alp_amount_only">Yalnız məbləğ (valyutasız)</label>
+                            </div>
+                        </div>
+                        <div class="col-12" t-if="el.type === 'barcode'">
+                            <label class="alp-lbl">Barkod növü</label>
+                            <select class="form-select form-select-sm" t-att-disabled="props.readonly"
+                                    t-on-change="(ev) => this.onSelect('barcode_symbology', ev)">
+                                <option value="code128" t-att-selected="el.barcode_symbology === 'code128'">Code 128</option>
+                                <option value="ean13" t-att-selected="el.barcode_symbology === 'ean13'">EAN-13 (13 rəqəm)</option>
+                            </select>
+                        </div>
+                        <div class="col-12" t-if="el.type === 'barcode'">
+                            <div class="form-check">
+                                <input type="checkbox" class="form-check-input" id="alp_bc_text"
+                                       t-att-checked="el.show_barcode_text" t-att-disabled="props.readonly"
+                                       t-on-change="(ev) => this.onCheck('show_barcode_text', ev)"/>
+                                <label class="form-check-label small" for="alp_bc_text">Nömrəni altında göstər</label>
+                            </div>
+                        </div>
+                        <div class="col-6" t-if="el.type === 'barcode' and !el.width_mm">
+                            <label class="alp-lbl">Modul eni (nöqtə)</label>
+                            <input type="number" step="1" class="form-control form-control-sm"
+                                   t-att-value="el.module_width" t-att-disabled="props.readonly"
+                                   t-on-change="(ev) => this.onInt('module_width', ev, 1)"/>
+                        </div>
+                        <div class="col-6" t-if="el.type === 'rect'">
+                            <label class="alp-lbl">Qalınlıq (mm)</label>
+                            <input type="number" step="0.1" class="form-control form-control-sm"
+                                   t-att-value="el.thickness_mm" t-att-disabled="props.readonly"
+                                   t-on-change="(ev) => this.onNum('thickness_mm', ev, 0.1)"/>
+                        </div>
+                    </div>
+                    <div class="alp-actions mt-2 d-flex gap-1 flex-wrap">
+                        <button type="button" class="btn btn-sm btn-light" title="Arxaya" t-att-disabled="props.readonly"
+                                t-on-click="() => this.moveSelected(-1)"><i class="fa fa-arrow-up"/></button>
+                        <button type="button" class="btn btn-sm btn-light" title="Önə" t-att-disabled="props.readonly"
+                                t-on-click="() => this.moveSelected(1)"><i class="fa fa-arrow-down"/></button>
+                        <button type="button" class="btn btn-sm btn-light" t-att-disabled="props.readonly"
+                                t-on-click="duplicateSelected"><i class="fa fa-clone me-1"/>Kopyala</button>
+                        <button type="button" class="btn btn-sm btn-outline-danger" t-att-disabled="props.readonly"
+                                t-on-click="removeSelected"><i class="fa fa-trash me-1"/>Sil</button>
+                    </div>
+                </div>
+            </t>
+            <t t-else="">
+                <div class="text-muted small">Soldan element əlavə edin və ya etiketdə bir elementi seçin.</div>
+            </t>
+
+            <div class="alp-title mt-3">Elementlər (<t t-esc="state.elements.length"/>)</div>
+            <div class="alp-list">
+                <t t-foreach="state.elements" t-as="e" t-key="e.uid">
+                    <div t-attf-class="alp-list-item {{ state.selected === e.uid ? 'active' : '' }}"
+                         t-on-click="() => this.select(e.uid)">
+                        <span t-esc="typeLabel(e.type)"/>
+                        <span class="text-muted ms-1" t-esc="listHint(e)"/>
+                    </div>
+                </t>
+            </div>
+        </div>
+    </div>
+</t>
+
+</templates>

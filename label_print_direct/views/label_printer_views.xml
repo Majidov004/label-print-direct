@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_label_printer_list" model="ir.ui.view">
+        <field name="name">label.printer.list</field>
+        <field name="model">label.printer</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="sequence" widget="handle"/>
+                <field name="display_name" string="Printer"/>
+                <field name="model_id"/>
+                <field name="language"/>
+                <field name="printer_key"/>
+                <field name="dpi"/>
+                <field name="note"/>
+                <field name="format_count" string="Formatlar"/>
+                <field name="active" column_invisible="1"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_label_printer_form" model="ir.ui.view">
+        <field name="name">label.printer.form</field>
+        <field name="model">label.printer</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="action_test_print" type="object" string="Test çapı"
+                            class="btn-primary" icon="fa-print"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_open_formats" type="object" class="oe_stat_button" icon="fa-tags">
+                            <field name="format_count" widget="statinfo" string="Formatlar"/>
+                        </button>
+                    </div>
+                    <widget name="web_ribbon" title="Arxiv" bg_color="text-bg-danger" invisible="active"/>
+                    <div class="oe_title">
+                        <label for="model_id"/>
+                        <h1><field name="model_id" placeholder="Modeli seçin…" options="{'no_open': True}"/></h1>
+                        <label for="name"/>
+                        <h2><field name="name" placeholder="məs. Anbar printeri"/></h2>
+                    </div>
+                    <group>
+                        <group string="Yüklənmiş etiket (rulon)">
+                            <field name="size_id" options="{'no_open': True}"/>
+                            <field name="width_mm"/>
+                            <field name="height_mm"/>
+                            <field name="gap_mm"/>
+                        </group>
+                        <group string="Agent">
+                            <field name="printer_key"/>
+                            <field name="note"/>
+                        </group>
+                        <group string="Printer mühərriki">
+                            <field name="language"/>
+                            <field name="dpi"/>
+                            <field name="max_width_mm"/>
+                            <field name="speed"/>
+                            <field name="density"/>
+                            <field name="direction"/>
+                        </group>
+                        <group string="Digər">
+                            <field name="sequence"/>
+                            <field name="active"/>
+                        </group>
+                    </group>
+                    <div class="text-muted">
+                        Agentin pəncərəsində «Odoo açarı» sütununa buradakı printer açarını, yanına isə
+                        həmin kompüterdəki Windows printerini yazın. Rulonu dəyişəndə burada ölçünü yeniləyin;
+                        yeni format yaradanda ölçü printerdən gəlir.
+                    </div>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_label_printer" model="ir.actions.act_window">
+        <field name="name">Printerlər</field>
+        <field name="res_model">label.printer</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">İlk printeri əlavə edin</p>
+            <p>Modeli və rulondakı etiket ölçüsünü kataloqdan seçin, agent üçün açar yazın. Formatlar sonra bu printeri seçir.</p>
+        </field>
+    </record>
+
+    <!-- Kataloqlar -->
+    <record id="view_label_printer_model_list" model="ir.ui.view">
+        <field name="name">label.printer.model.list</field>
+        <field name="model">label.printer.model</field>
+        <field name="arch" type="xml">
+            <list editable="bottom">
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="brand"/>
+                <field name="language"/>
+                <field name="dpi"/>
+                <field name="max_width_mm"/>
+                <field name="speed"/>
+                <field name="density"/>
+                <field name="note"/>
+            </list>
+        </field>
+    </record>
+    <record id="action_label_printer_model" model="ir.actions.act_window">
+        <field name="name">Printer modelləri</field>
+        <field name="res_model">label.printer.model</field>
+        <field name="view_mode">list</field>
+    </record>
+
+    <record id="view_label_size_list" model="ir.ui.view">
+        <field name="name">label.size.list</field>
+        <field name="model">label.size</field>
+        <field name="arch" type="xml">
+            <list editable="bottom">
+                <field name="name"/>
+                <field name="width_mm"/>
+                <field name="height_mm"/>
+                <field name="gap_mm"/>
+                <field name="note"/>
+            </list>
+        </field>
+    </record>
+    <record id="action_label_size" model="ir.actions.act_window">
+        <field name="name">Etiket ölçüləri</field>
+        <field name="res_model">label.size</field>
+        <field name="view_mode">list</field>
+    </record>
+
+</odoo>

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Action (⚙) menyusu: satış / alış sifarişində «Etiket çap et». Siyahıda bir neçə
+         sənəd seçiləndə də işləyir. Formda format düymələri çox olanda (3-dən çox)
+         yalnız bu yol qalır. -->
+    <record id="action_server_print_labels_sale" model="ir.actions.server">
+        <field name="name">Etiket çap et</field>
+        <field name="model_id" ref="sale.model_sale_order"/>
+        <field name="binding_model_id" ref="sale.model_sale_order"/>
+        <field name="binding_view_types">list,form</field>
+        <field name="state">code</field>
+        <field name="code">action = records.action_print_labels_direct()</field>
+    </record>
+    <record id="action_server_print_labels_purchase" model="ir.actions.server">
+        <field name="name">Etiket çap et</field>
+        <field name="model_id" ref="purchase.model_purchase_order"/>
+        <field name="binding_model_id" ref="purchase.model_purchase_order"/>
+        <field name="binding_view_types">list,form</field>
+        <field name="state">code</field>
+        <field name="code">action = records.action_print_labels_direct()</field>
+    </record>
+    <record id="action_server_print_labels_product_tmpl" model="ir.actions.server">
+        <field name="name">Etiket çap et</field>
+        <field name="model_id" ref="product.model_product_template"/>
+        <field name="binding_model_id" ref="product.model_product_template"/>
+        <field name="binding_view_types">list,form</field>
+        <field name="state">code</field>
+        <field name="code">action = records.action_print_labels_direct()</field>
+    </record>
+    <record id="action_server_print_labels_product" model="ir.actions.server">
+        <field name="name">Etiket çap et</field>
+        <field name="model_id" ref="product.model_product_product"/>
+        <field name="binding_model_id" ref="product.model_product_product"/>
+        <field name="binding_view_types">list,form</field>
+        <field name="state">code</field>
+        <field name="code">action = records.action_print_labels_direct()</field>
+    </record>
+    <record id="action_server_print_labels_picking" model="ir.actions.server">
+        <field name="name">Etiket çap et</field>
+        <field name="model_id" ref="stock.model_stock_picking"/>
+        <field name="binding_model_id" ref="stock.model_stock_picking"/>
+        <field name="binding_view_types">list,form</field>
+        <field name="state">code</field>
+        <field name="code">action = records.action_print_labels_direct()</field>
+    </record>
+</odoo>

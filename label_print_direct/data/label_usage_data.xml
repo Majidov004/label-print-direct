@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="usage_product" model="label.usage">
+        <field name="code">product</field>
+        <field name="name">Məhsullar</field>
+        <field name="sequence">10</field>
+    </record>
+    <record id="usage_stock" model="label.usage">
+        <field name="code">stock</field>
+        <field name="name">Anbar əməliyyatları</field>
+        <field name="sequence">20</field>
+        <field name="doc_model">stock.picking</field>
+        <field name="doc_label">Anbar sənədi</field>
+        <field name="line_model">stock.move</field>
+        <field name="line_label">Anbar sətri</field>
+    </record>
+    <record id="usage_quotation" model="label.usage">
+        <field name="code">quotation</field>
+        <field name="name">Qiymət təklifi</field>
+        <field name="sequence">30</field>
+        <field name="doc_model">sale.order</field>
+        <field name="doc_label">Satış sifarişi</field>
+        <field name="line_model">sale.order.line</field>
+        <field name="line_label">Satış sətri</field>
+    </record>
+    <record id="usage_sale" model="label.usage">
+        <field name="code">sale</field>
+        <field name="name">Satış sifarişi</field>
+        <field name="sequence">31</field>
+        <field name="doc_model">sale.order</field>
+        <field name="doc_label">Satış sifarişi</field>
+        <field name="line_model">sale.order.line</field>
+        <field name="line_label">Satış sətri</field>
+    </record>
+    <record id="usage_rfq" model="label.usage">
+        <field name="code">rfq</field>
+        <field name="name">Alış sorğusu (RFQ)</field>
+        <field name="sequence">40</field>
+        <field name="doc_model">purchase.order</field>
+        <field name="doc_label">Alış sifarişi</field>
+        <field name="line_model">purchase.order.line</field>
+        <field name="line_label">Alış sətri</field>
+    </record>
+    <record id="usage_purchase" model="label.usage">
+        <field name="code">purchase</field>
+        <field name="name">Alış sifarişi</field>
+        <field name="sequence">41</field>
+        <field name="doc_model">purchase.order</field>
+        <field name="doc_label">Alış sifarişi</field>
+        <field name="line_model">purchase.order.line</field>
+        <field name="line_label">Alış sətri</field>
+    </record>
+</odoo>

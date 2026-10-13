@@ -1,0 +1,3 @@
+NotoSans-Regular.ttf — Copyright 2022 The Noto Project Authors.
+Licensed under the SIL Open Font License, Version 1.1 (https://openfontlicense.org).
+Bundled so labels render identically on every server (Azerbaijani letters and the manat sign included).

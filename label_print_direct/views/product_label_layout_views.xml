@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Standart «Print Labels» pəncərəsi: çap üsulu + etiket formatı.
+         Anbarın öz «picking» görünüşü bu görünüşdən törədiyi üçün orada da görünür. -->
+    <record id="product_label_layout_form_direct" model="ir.ui.view">
+        <field name="name">product.label.layout.form.direct</field>
+        <field name="model">product.label.layout</field>
+        <field name="inherit_id" ref="product.product_label_layout_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='custom_quantity']" position="before">
+                <field name="label_usage" invisible="1"/>
+                <field name="label_usage_ctx" invisible="1"/>
+                <field name="label_doc_model" invisible="1"/>
+                <field name="label_doc_id" invisible="1"/>
+                <field name="print_target" widget="radio" options="{'horizontal': true}"/>
+                <field name="label_format_id" options="{'no_create': True, 'no_open': True}"
+                       invisible="print_target != 'label'" required="print_target == 'label'"/>
+                <field name="label_qty_mode" widget="radio" options="{'horizontal': true}"
+                       invisible="print_target != 'label' or not label_doc_model"/>
+            </xpath>
+            <xpath expr="//field[@name='custom_quantity']" position="attributes">
+                <attribute name="invisible">print_target == 'label' and label_doc_model and label_qty_mode == 'doc'</attribute>
+            </xpath>
+            <xpath expr="//field[@name='print_format']" position="attributes">
+                <attribute name="invisible">print_target == 'label'</attribute>
+            </xpath>
+            <xpath expr="//field[@name='extra_html']" position="attributes">
+                <attribute name="invisible">print_target == 'label' or print_format != '2x7xprice'</attribute>
+            </xpath>
+            <xpath expr="//form/group" position="after">
+                <field name="label_needs_confirm" invisible="1"/>
+                <field name="label_confirm_threshold" invisible="1"/>
+                <div class="alert alert-warning mb-2" role="alert"
+                     invisible="print_target != 'label' or not label_needs_confirm">
+                    <p class="mb-2">
+                        Bu çap <strong><field name="label_total_qty" readonly="1" class="oe_inline"/></strong>
+                        etiket göndərəcək. Printerə gedən iş yaddaşdan ləğv edilə bilmir,
+                        yalnız printeri söndürməklə dayanır.
+                    </p>
+                    <field name="label_confirmed" nolabel="1" class="oe_inline"/>
+                    <label for="label_confirmed" class="ms-1"/>
+                </div>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

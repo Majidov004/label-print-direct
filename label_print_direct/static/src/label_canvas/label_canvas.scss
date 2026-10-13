@@ -1,0 +1,108 @@
+.alp-designer {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    outline: none;
+    min-height: 320px;
+
+    .alp-title {
+        font-size: 11px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.03em;
+        color: #6c757d;
+        margin-bottom: 4px;
+    }
+
+    .alp-toolbar {
+        flex: 0 0 150px;
+        width: 150px;
+        display: flex;
+        flex-direction: column;
+        gap: 3px;
+    }
+    .alp-add {
+        text-align: left;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .alp-stage {
+        flex: 1 1 auto;
+        min-width: 0;
+    }
+    .alp-stage-row {
+        display: flex;
+        gap: 16px;
+        flex-wrap: wrap;
+        align-items: flex-start;
+    }
+    .alp-canvas-wrap,
+    .alp-preview {
+        background: #f3f4f6;
+        border-radius: 6px;
+        padding: 10px;
+        overflow: auto;
+        max-width: 100%;
+    }
+    .alp-caption {
+        font-size: 11px;
+        color: #6c757d;
+        margin-bottom: 6px;
+    }
+    .alp-canvas {
+        display: block;
+        background: #fff;
+        user-select: none;
+        touch-action: none;
+        cursor: default;
+    }
+    .alp-el {
+        cursor: move;
+        text {
+            pointer-events: none;
+        }
+    }
+    .alp-handle {
+        cursor: nwse-resize;
+    }
+    .alp-preview img {
+        display: block;
+        image-rendering: pixelated;
+        border: 1px solid #bbb;
+        background: #fff;
+        max-width: 100%;
+        height: auto;
+    }
+
+    .alp-props {
+        flex: 0 0 260px;
+        width: 260px;
+    }
+    .alp-lbl {
+        display: block;
+        font-size: 11px;
+        color: #6c757d;
+        margin: 0;
+    }
+    .alp-list {
+        max-height: 220px;
+        overflow: auto;
+    }
+    .alp-list-item {
+        padding: 3px 6px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 12px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        &:hover {
+            background: #f1f3f5;
+        }
+        &.active {
+            background: #e7f1ff;
+        }
+    }
+}

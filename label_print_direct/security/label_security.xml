@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Çoxşirkətli təcrid: istifadəçi yalnız icazəli olduğu şirkətlərin
+         formatlarını/işlərini görür. Şirkəti boş olan format hamıya açıqdır. -->
+    <record id="label_format_company_rule" model="ir.rule">
+        <field name="name">Etiket formatı: şirkət üzrə</field>
+        <field name="model_id" ref="model_label_format"/>
+        <field name="domain_force">['|', ('company_ids', '=', False), ('company_ids', 'in', company_ids)]</field>
+    </record>
+    <record id="label_element_company_rule" model="ir.rule">
+        <field name="name">Etiket elementi: şirkət üzrə</field>
+        <field name="model_id" ref="model_label_element"/>
+        <field name="domain_force">['|', ('format_id.company_ids', '=', False), ('format_id.company_ids', 'in', company_ids)]</field>
+    </record>
+    <record id="label_print_job_company_rule" model="ir.rule">
+        <field name="name">Etiket çap işi: şirkət üzrə</field>
+        <field name="model_id" ref="model_label_print_job"/>
+        <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+    </record>
+</odoo>

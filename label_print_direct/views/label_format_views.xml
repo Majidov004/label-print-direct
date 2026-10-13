@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_label_format_list" model="ir.ui.view">
+        <field name="name">label.format.list</field>
+        <field name="model">label.format</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="width_mm"/>
+                <field name="height_mm"/>
+                <field name="printer_id"/>
+                <field name="usage_ids" widget="many2many_tags"/>
+                <field name="company_ids" widget="many2many_tags" groups="base.group_multi_company"/>
+                <field name="active" column_invisible="1"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_label_format_form" model="ir.ui.view">
+        <field name="name">label.format.form</field>
+        <field name="model">label.format</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="action_test_print" type="object" string="Test çapı"
+                            class="btn-primary" icon="fa-print"/>
+                    <button name="action_generate_default_layout" type="object"
+                            string="Standart dizayn" icon="fa-magic"
+                            confirm="Mövcud elementlər silinib standart dizaynla (ad, barkod, qiymət) əvəz olunacaq. Davam edilsin?"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_open_jobs" type="object" class="oe_stat_button" icon="fa-list">
+                            <field name="job_count" widget="statinfo" string="Çap işləri"/>
+                        </button>
+                    </div>
+                    <widget name="web_ribbon" title="Arxiv" bg_color="text-bg-danger" invisible="active"/>
+                    <div class="oe_title">
+                        <label for="name"/>
+                        <h1><field name="name" placeholder="məs. 40 × 30 mm"/></h1>
+                    </div>
+                    <group>
+                        <group string="Etiket">
+                            <field name="width_mm"/>
+                            <field name="height_mm"/>
+                            <field name="gap_mm"/>
+                        </group>
+                        <group string="Printer">
+                            <field name="printer_id" options="{'no_create': True}"/>
+                            <field name="printer_key" invisible="1"/>
+                            <field name="dpi" invisible="1"/>
+                        </group>
+                        <group string="Harada, kim üçün">
+                            <field name="usage_ids" widget="many2many_tags" options="{'no_create': True}"/>
+                            <field name="company_ids" widget="many2many_tags" options="{'no_create': True}"
+                                   groups="base.group_multi_company"/>
+                            <field name="price_tax_mode"/>
+                        </group>
+                        <group string="Digər">
+                            <field name="sequence"/>
+                            <field name="active"/>
+                            <field name="note"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Dizayner" name="designer">
+                            <field name="usage_codes" invisible="1"/>
+                            <field name="layout_json" widget="label_canvas" nolabel="1"/>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_label_format_search" model="ir.ui.view">
+        <field name="name">label.format.search</field>
+        <field name="model">label.format</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="printer_key"/>
+                <filter string="Arxiv" name="inactive" domain="[('active', '=', False)]"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_label_format" model="ir.actions.act_window">
+        <field name="name">Etiket formatları</field>
+        <field name="res_model">label.format</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">İlk etiket formatını yaradın</p>
+            <p>Ölçünü yazın, «Standart dizayn» düyməsini basın, sonra dizaynerdə elementləri istədiyiniz kimi düzün.</p>
+        </field>
+    </record>
+
+</odoo>
